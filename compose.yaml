@@ -1,0 +1,32 @@
+version: "3.8"
+
+services:
+
+  node:
+    build:
+     context: ./app
+     dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      DATABASE_URL: ${DATABASE_URL}
+      WAIT_HOSTS: mongo:27017
+    depends_on:
+      - mongo
+    volumes:
+      - .:/app
+      - /app/node_modules
+      - /app/.node
+
+  mongo:
+    image: mongo
+    restart: always
+    container_name: mongo
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${DATABASE_USER}
+      MONGO_INITDB_ROOT_PASSWORD: ${DATABASE_PASSWORD}
+      MONGO_INITDB_DATABASE: ${DATABASE_NAME}
+    volumes:
+      - ./database:/docker-entrypoint-initdb.d
