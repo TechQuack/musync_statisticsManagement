@@ -12,3 +12,36 @@ datasource db {
   provider = "mongodb"
   url      = env("DATABASE_URL")
 }
+
+model UserMusicStatistic {
+  id                  String              @id @default(auto()) @map("_id") @db.ObjectId
+  user_id             String              @unique @db.ObjectId
+  user                User                @relation(fields: [user_id], references: [user_id])
+  top_listened_artist TopListenedArtist[]
+  top_listened_music  TopListenedMusic[]
+}
+
+model User {
+  user_id            String              @id @default(auto()) @map("_id") @db.ObjectId
+  is_certified       Boolean             @default(false)
+  favorite_music     String
+  favorite_musician  String
+  favorite_genre     String
+  UserMusicStatistic UserMusicStatistic?
+}
+
+model TopListenedArtist {
+  top_listened_artist    String
+  top_ranking            Int
+  top_listened_artist_id String             @id @default(auto()) @map("_id") @db.ObjectId
+  UserMusicStatistic     UserMusicStatistic @relation(fields: [userMusicStatisticId], references: [id])
+  userMusicStatisticId   String             @db.ObjectId
+}
+
+model TopListenedMusic {
+  top_listened_music    String
+  artist_name           String
+  top_listened_music_id String             @id @default(auto()) @map("_id") @db.ObjectId
+  UserMusicStatistic    UserMusicStatistic @relation(fields: [userMusicStatisticId], references: [id])
+  userMusicStatisticId  String             @db.ObjectId
+}
