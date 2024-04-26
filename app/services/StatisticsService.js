@@ -56,6 +56,20 @@ export default class StatisticsService {
         });
     }
 
+    async getTopListenedMusics(user) {
+        if (!this.checkUserExistence(user)) {
+            throw Error(`invalid user`);
+        }
+        const prisma = new PrismaClient();
+        return prisma.topListenedMusic.findMany({
+           where: {
+               userMusicStatistic: {
+                   user_id: user.id
+               }
+           }
+        });
+    }
+
     checkRankValidity(rank) {
         return rank >= 1 && rank <= 3;
     }
