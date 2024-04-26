@@ -2,11 +2,14 @@ import {PrismaClient, User, TopListenedArtist, UserMusicStatistic, TopListenedMu
 
 export default class StatisticsService {
 
-    static async getArtist(user, rank) {
-        const prisma = new PrismaClient();
+    async getArtist(user, rank) {
         if (rank < 1 || rank > 3) {
             throw Error(`invalid rank :${rank} greater than 3 or less than 1`);
         }
+        if (!this.checkUserExistence(user)) {
+            throw Error('invalid user');
+        }
+        const prisma = new PrismaClient();
         return prisma.topListenedArtist.findFirst({
             where: {
                 AND: {
@@ -19,11 +22,14 @@ export default class StatisticsService {
         });
     }
 
-    static async getMusic(user, rank) {
-        const prisma = new PrismaClient();
-        if (rank < 1 || rank > 3) {
+    async getMusic(user, rank) {
+        if (!this.checkRankValidity(rank)) {
             throw Error(`invalid rank :${rank} greater than 3 or less than 1`);
         }
+        if (!this.checkUserExistence(user)) {
+            throw Error('invalid user');
+        }
+        const prisma = new PrismaClient();
         return prisma.topListenedMusic.findFirst({
            where: {
                AND: {
@@ -34,6 +40,33 @@ export default class StatisticsService {
                }
            }
         });
+    }
+
+    async getTopListenedArtists(user) {
+        if (!this.checkUserExistence(user)) {
+            throw Error('invalid user');
+        }
+        const prisma = new PrismaClient();
+        return prisma.topListenedArtist.findMany({
+           where: {
+               userMusicStatistic: {
+                   user_id: user.id
+               }
+           }
+        });
+    }
+
+    checkRankValidity(rank) {
+        return rank >= 1 && rank <= 3;
+    }
+
+    checkUserExistence(user) {
+        const prisma = new PrismaClient();
+        return prisma.user.findUnique({
+           where: {
+               user_id: user.id
+           }
+        }) != null;
     }
 
 }
