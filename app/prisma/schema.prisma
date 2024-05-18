@@ -35,7 +35,7 @@ model TopListenedArtist {
   top_ranking            Int
   top_listened_artist_id String             @id @default(auto()) @map("_id") @db.ObjectId
   userMusicStatistic     UserMusicStatistic @relation(fields: [userMusicStatisticId], references: [id])
-  userMusicStatisticId   String             @unique @db.ObjectId
+  userMusicStatisticId   String             @db.ObjectId
 }
 
 model TopListenedMusic {
