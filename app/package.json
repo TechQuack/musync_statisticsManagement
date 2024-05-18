@@ -7,12 +7,15 @@
   },
   "dependencies": {
     "@prisma/client": "^5.12.1",
+    "@types/node": "^20.12.12",
+    "@types/request": "^2.48.12",
     "cookie-parser": "~1.4.4",
     "debug": "~2.6.9",
     "express": "^4.19.2",
     "http-errors": "~1.6.3",
     "jade": "^0.29.0",
-    "morgan": "~1.9.1"
+    "morgan": "~1.9.1",
+    "routes": "^2.1.0"
   },
   "devDependencies": {
     "prisma": "^5.12.1"
