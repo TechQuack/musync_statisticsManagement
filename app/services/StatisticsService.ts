@@ -111,56 +111,65 @@ export class StatisticsService {
         return res;
     }
 
-    public async updateTopListenedArtists(user: User, artists: TopListenedArtist[]) : Promise<void> {
+    public async updateTopListenedArtists(user: User, token: string) : Promise<string> {
         if (!this.checkUserExistence(user)) {
-            throw Error(`invalid user`);
-        }
-        const prisma = new PrismaClient();
-        prisma.userMusicStatistic.update({
-            where: {
-                user_id: user.user_id
-            },
-            data: {
-                top_listened_artist: {
-                    set: artists
+            const topArtists = await this.getTopArtistsFromAPI(user, token);
+            const prisma = new PrismaClient();
+            prisma.userMusicStatistic.update({
+                where: {
+                    user_id: user.user_id
+                },
+                data: {
+                    top_listened_artist: {
+                        createMany: {
+                            data: topArtists
+                        }
+                    }
                 }
-            }
-        })
+            })
+            return "user updated";
+        }
+        return this.createUserStatistics(user, token);
     }
 
-    public async updateTopListenedMusics(user: User, musics: TopListenedMusic[]) : Promise<void> {
-        if (!this.checkUserExistence(user)) {
-            throw Error(`invalid user`);
-        }
-        const prisma = new PrismaClient();
-        prisma.userMusicStatistic.update({
-            where: {
-                user_id: user.user_id
-            },
-            data: {
-                top_listened_music: {
-                    set: musics
+    public async updateTopListenedMusics(user: User, token: string) : Promise<string> {
+        if (this.checkUserExistence(user)) {
+            const topMusics = await this.getTopMusicsFromAPI(user, token);
+            const prisma = new PrismaClient();
+            prisma.userMusicStatistic.update({
+                where: {
+                    user_id: user.user_id
+                },
+                data: {
+                    top_listened_music: {
+                        createMany: {
+                            data: topMusics
+                        }
+                    }
                 }
-            }
-        });
+            });
+            return "user updated";
+        }
+        return this.createUserStatistics(user, token);
     }
 
-    public async updateUserInformation(user: User) {
-        if (!this.checkUserExistence(user)) {
-            throw Error(`invalid user`);
-        }
+    public async updateUserInformation(user: User, token: string) {
         const prisma = new PrismaClient();
-        prisma.user.update({
-            where: {
-                user_id: user.user_id
-            },
-            data: {
-                is_certified: user.is_certified,
-                favorite_music: user.favorite_music,
-                favorite_musician: user.favorite_musician,
-                favorite_genre: user.favorite_genre
-            }
-        })
+        if (this.checkUserExistence(user)) {
+            await prisma.user.update({
+                where: {
+                    user_id: user.user_id
+                },
+                data: {
+                    is_certified: user.is_certified,
+                    favorite_music: user.favorite_music,
+                    favorite_musician: user.favorite_musician,
+                    favorite_genre: user.favorite_genre
+                }
+            })
+            return "user updated";
+        }
+        return this.createUserStatistics(user, token);
     }
 
     public async sendRequestToAPI(user: User,url: string, token: string) {
@@ -257,6 +266,41 @@ export class StatisticsService {
         }
         return res.response.body.access_token;
     }*/
+
+    private async createUserStatistics(user: User, token: string) {
+        const prisma = new PrismaClient();
+        const topArtists = await this.getTopArtistsFromAPI(user, token);
+        const topMusics = await this.getTopMusicsFromAPI(user, token);
+        await prisma.userMusicStatistic.create({
+            data: {
+                user_id: user.user_id,
+                top_listened_artist: {
+                    createMany: {
+                        data: topArtists
+                    }
+                },
+                top_listened_music: {
+                    createMany: {
+                        data: topMusics
+                    }
+                }
+            }
+        });
+        await prisma.user.create({
+            data: {
+                is_certified: user.is_certified,
+                favorite_music: user.favorite_music,
+                favorite_musician: user.favorite_musician,
+                favorite_genre: user.favorite_genre,
+                userMusicStatistic: {
+                    connect: {
+                        user_id: user.user_id
+                    }
+                }
+            }
+        })
+        return "user created";
+    }
 
     private verifyRank(rank: number) {
         return rank >= 1 && rank <= 3;
