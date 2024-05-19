@@ -4,7 +4,7 @@ WORKDIR /app
 
 COPY package.json package-lock.json /app/
 
-RUN npm install
+RUN npm install && npm install -g ts-node
 
 COPY . /app
 
