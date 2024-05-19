@@ -18,6 +18,7 @@
     "routes": "^2.1.0"
   },
   "devDependencies": {
+    "@types/express": "^4.17.21",
     "prisma": "^5.12.1"
   }
 }
