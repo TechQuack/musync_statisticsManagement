@@ -1,12 +1,18 @@
-const createError = require('http-errors');
-const express = require('express');
-const path = require('path');
-const cookieParser = require('cookie-parser');
-const logger = require('morgan');
+import StatisticsController from "./routes/statisticsController";
 
-const statisticsController = require('./routes/statisticsController');
-
+const express = require("express");
 const app = express();
+const createError = require("http-errors");
+const path = require("path")
+const cookieParser = require("cookie-parser")
+const logger = require("morgan");
+
+type Request = InstanceType<typeof express>;
+type Response = InstanceType<typeof express>;
+type NextFunction = InstanceType<typeof express>;
+
+
+const statisticsController = new StatisticsController().router
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -21,12 +27,12 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', statisticsController);
 
 // catch 404 and forward to error handler
-app.use(function(req, res, next) {
+app.use(function(req: Request, res: Response, next: NextFunction) {
   next(createError(404));
 });
 
 // error handler
-app.use(function(err, req, res) {
+app.use(function(err: any , req: Request, res: Response) {
   // set locals, only providing error in development
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};
@@ -36,4 +42,4 @@ app.use(function(err, req, res) {
   res.render('error');
 });
 
-module.exports = app;
+app.listen(3000);
