@@ -1,0 +1,12 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+class StatisticsController {
+    getArtist(User user, Number rank): TopListenedArtist
+    getMusic(User user, Number rank): TopListenedMusic
+    getUserMusicStatistic(User user): userMusicStatistic
+    updateUserInformation(User user, String token): Response
+    updateUserStatistics(User user, String token): Response
+}
+
+@enduml
