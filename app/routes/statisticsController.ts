@@ -14,10 +14,6 @@ export default class StatisticsController {
 
     constructor() {
 
-        this.router.get('/test', function test(req: Request, res: Response) {
-            res.send("test");
-        })
-
         this.router.get('/statistics/user/:user/artist/:rank', async function getArtist(req: Request, res: Response) {
             const user: User = JSON.parse(req.params.user);
             const rank: number = parseInt(req.params.rank);
