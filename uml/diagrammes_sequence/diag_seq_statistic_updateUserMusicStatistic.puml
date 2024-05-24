@@ -1,0 +1,38 @@
+@startuml
+
+participant StatisticsController
+participant StatisticsService
+database mongoStatistic
+
+-> StatisticsController: updateUserMusicStatistic(User user)
+
+StatisticsController -> StatisticsService: updateTopListenedArtists(User user, String toker)
+
+alt s'il existe une entrée
+  StatisticsService -> mongoStatistic: Met à jour l'entrée
+else
+  StatisticsService -> mongoStatistic: Crée une nouvelle entrée
+end
+
+StatisticsService <- mongoStatistic: Retour du message indiquant la création ou la modification d'une entrée
+
+StatisticsController <- StatisticsService: Tranfert du message indiquant la création ou la modification d'une entrée
+
+alt si l'entrée est nouvelement crée
+    <- StatisticsController: Renvoie une réponse à la requête avec le message indiquant la création ou la modification d'une entrée
+end
+StatisticsController -> StatisticsService: updateTopListenedMusics(User user, String toker)
+
+alt s'il existe une entrée
+    StatisticsService -> mongoStatistic: Met à jour l'entrée
+else
+    StatisticsService -> mongoStatistic: Crée une nouvelle entrée
+end
+
+StatisticsService <- mongoStatistic: Retour du message indiquant la création ou la modification d'une entrée
+
+StatisticsController <- StatisticsService: Tranfert du message indiquant la création ou la modification d'une entrée
+
+<- StatisticsController: Renvoie une réponse à la requête message indiquant la création ou la modification d'une entrée
+
+@enduml

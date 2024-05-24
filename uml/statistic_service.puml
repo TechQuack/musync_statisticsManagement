@@ -1,0 +1,19 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+class StatisticsService {
+    getArtist(User user, Number rank): TopListenedArtist
+    getMusic(User user, Number rank): TopListenedMusic
+    getTopListenedArtists(User user): List<TopListenedArtist>
+    getTopListenedMusics(User user): List<TopListenedMusic>
+    getTopArtistsFromAPI(User user, String token): List<Artist>
+    getTopMusicsFromAPI(User user, String token): List<Music>
+    updateTopListenedArtists(User user, String token): String
+    updateTopListenedMusics(User user, String token): String
+    updateUserInformation(User user, String token): String
+    updateTopListenedArtist(User user, TopListenedArtist artist, Number rank): void
+    updateTopListenedMusic(User user, TopListenedMusic music, Number rank): void
+    sendRequestToAPI(User user, String url, String token): void
+}
+
+@enduml

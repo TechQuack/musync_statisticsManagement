@@ -1,0 +1,20 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+participant StatisticsController
+participant StatisticsService
+database mongoStatistic
+
+-> StatisticsController: getMusic(User user, Number rank)
+
+StatisticsController -> StatisticsService : getMusic(User user, Number rank)
+
+StatisticsService -> mongoStatistic: Requête en BDD
+
+StatisticsService <- mongoStatistic: Retour de la requête
+
+StatisticsController <- StatisticsService: Transfert du JSON
+
+<- StatisticsController: Transfert du JSON
+
+@enduml
