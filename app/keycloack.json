@@ -1,0 +1,12 @@
+{
+  "realm": "GROUPE01",
+  "auth-server-url": "http://srv-dpi-archidist-keycloak.univ-rouen.fr:8080/",
+  "ssl-required": "external",
+  "resource": "api_statistic",
+  "verify-token-audience": true,
+  "credentials": {
+    "secret": "SVNhn8olG2CiCukFC6s5XZBz5kO1tIJj"
+  },
+  "use-resource-role-mappings": true,
+  "confidential-port": 0
+}

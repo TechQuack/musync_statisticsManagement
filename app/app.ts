@@ -6,7 +6,8 @@ const createError = require("http-errors");
 const path = require("path")
 const cookieParser = require("cookie-parser")
 const logger = require("morgan");
-
+/*const session = require("express-session");
+const Keycloak = require("keycloak-connect");*/
 type Request = InstanceType<typeof express>;
 type Response = InstanceType<typeof express>;
 type NextFunction = InstanceType<typeof express>;
@@ -41,5 +42,25 @@ app.use(function(err: any , req: Request, res: Response) {
   res.status(err.status || 500);
   res.render('error');
 });
+
+/*const memoryStore = new session.MemoryStore();
+app.use(
+    session({
+      secret: 'SVNhn8olG2CiCukFC6s5XZBz5kO1tIJj',
+      resave: false,
+      saveUninitialized: true,
+      store: memoryStore
+    })
+);
+const keycloak = new Keycloak({
+  store: memoryStore
+});
+app.use(
+    keycloak.middleware({
+      logout: '/logout',
+      admin: '/'
+    })
+);*/
+
 
 app.listen(3000);
