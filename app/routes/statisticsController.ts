@@ -14,53 +14,59 @@ export default class StatisticsController {
 
     constructor() {
 
-        this.router.get('/statistics/user/:user/artist/:rank', async function getArtist(req: Request, res: Response) {
-            const user: User = JSON.parse(req.params.user);
+        this.router.get('/statistics/user/artist/:rank', async function getArtist(req: Request, res: Response) {
+            const user: User = req.body.user;
             const rank: number = parseInt(req.params.rank);
             let artist: TopListenedArtist | null = null;
             try {
                 artist = await service.getArtist(user, rank);
-            } catch (error) {
-                res.status(403).send({error: error});
+            } catch (error: any) {
+                res.status(403).send({error: error.message});
                 return;
             }
             res.status(200).send(artist);
         })
 
-        this.router.get('/statistics/user/:user/music/:rank', async function getMusic(req: Request, res: Response) {
-            const user: User = JSON.parse(req.params.user);
+        this.router.get('/statistics/user/music/:rank', async function getMusic(req: Request, res: Response) {
+            const user: User = req.body.user;
             const rank: number = parseInt(req.params.rank);
             let music: TopListenedMusic | null;
             try {
                 music = await service.getMusic(user, rank);
-            } catch (error) {
-                res.status(403).send({error: error});
+            } catch (error: any) {
+                res.status(403).send({error: error.message});
                 return;
             }
             res.status(200).send(music);
         })
 
-        this.router.get('/statistics/user/:user', async function getUserMusicStatistic(req: Request , res: Response) {
-            const user: User = JSON.parse(req.params.user);
-            res.status(200).send(new PrismaClient().userMusicStatistic.findUnique({
-                where: {
-                    user_id: user.user_id
-                }
-            }))
+        this.router.get('/statistics/user', async function getUserMusicStatistic(req: Request , res: Response) {
+            const user: User = req.body.user;
+            let userInformation = null;
+            try {
+                userInformation = await new PrismaClient().userMusicStatistic.findUnique({
+                    where: {
+                        user_id: user.user_id
+                    }
+                });
+            } catch (error: any) {
+
+            }
+            res.status(userInformation != null ? 200: 403).send(userInformation != null ? userInformation: "non existent user")
         })
 
         this.router.post('/statistics/user/update/information', async function updateUserInformation(req: Request, res: Response) {
-            const user: User = JSON.parse(req.body.user);
+            const user: User = req.body.user;
             const token: string = req.body.token;
             const message: string = await service.updateUserInformation(user, token);
             res.status(200).send(message);
         })
 
         this.router.post('/statistics/user/update/statistics', async function updateUserStatistics(req: Request, res: Response) {
-            const user: User = JSON.parse(req.body.user);
+            const user: User = req.body.user;
             const token: string = req.body.token;
             let message: string = await service.updateTopListenedArtists(user, token);
-            if (message === "user created") {
+            if (message !== "user updated") {
                 res.status(200).send(message);
                 return;
             }
