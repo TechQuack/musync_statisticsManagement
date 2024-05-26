@@ -66,9 +66,20 @@ export class StatisticsService {
         });
     }
 
+    public async getUserStatistics(user: User) {
+        if (!await this.checkUserExistence(user)) {
+            throw Error(`non existent user`);
+        }
+        return new PrismaClient().userMusicStatistic.findUnique({
+            where: {
+                user_id: user.user_id
+            }
+        })
+    }
+
     public async getTopArtistsFromAPI(token: string) {
         const url = "https://api.spotify.com/v1/me/top/artists?limit=3&offset=0";
-        let topArtists = await this.sendRequestToAPI(url, token);
+        let topArtists: any = await this.sendRequestToAPI(url, token);
         topArtists = topArtists.items;
         let res = []
         if (topArtists == undefined) {
@@ -85,7 +96,7 @@ export class StatisticsService {
 
     public async getTopMusicsFromAPI(token: string) {
         const url = "https://api.spotify.com/v1/me/top/tracks?limit=3&offset=0";
-        let topMusics = await this.sendRequestToAPI(url, token);
+        let topMusics: any = await this.sendRequestToAPI(url, token);
         topMusics = topMusics.items;
         let res = [];
         if (topMusics == undefined) {

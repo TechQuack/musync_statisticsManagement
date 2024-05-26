@@ -1,5 +1,6 @@
 import {PrismaClient, TopListenedArtist, TopListenedMusic, User} from "@prisma/client";
 import {StatisticsService} from "../services/StatisticsService";
+import {updateUserStatistic} from "../kafka/producer";
 
 const express = require("express");
 
@@ -42,13 +43,9 @@ export default class StatisticsController {
 
         this.router.get('/statistics/user', async function getUserMusicStatistic(req: Request , res: Response) {
             const user: User = req.body.user;
-            let userInformation = null;
+            let userInformation;
             try {
-                userInformation = await new PrismaClient().userMusicStatistic.findUnique({
-                    where: {
-                        user_id: user.user_id
-                    }
-                });
+                userInformation = await service.getUserStatistics(user)
             } catch (error: any) {
 
             }
@@ -59,6 +56,15 @@ export default class StatisticsController {
             const user: User = req.body.user;
             const token: string = req.body.token;
             const message: string = await service.updateUserInformation(user, token);
+            let userInformation;
+            try {
+                userInformation = await service.getUserStatistics(user)
+            } catch (error: any) {
+
+            }
+            if (userInformation) {
+                await updateUserStatistic(userInformation);
+            }
             res.status(200).send(message);
         })
 
@@ -71,6 +77,15 @@ export default class StatisticsController {
                 return;
             }
             message = await service.updateTopListenedMusics(user, token);
+            let userInformation;
+            try {
+                userInformation = await service.getUserStatistics(user)
+            } catch (error: any) {
+
+            }
+            if (userInformation) {
+                await updateUserStatistic(userInformation);
+            }
             res.status(200).send(message);
         })
     }
