@@ -1,0 +1,167 @@
+{
+	"info": {
+		"_postman_id": "94a16599-a377-442f-9466-9fe05f3000ab",
+		"name": "musync_statistics",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "35176981"
+	},
+	"item": [
+		{
+			"name": "localhost:3000/statistics/user/artist/1",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"user\": {\n    \"user_id\": \"123456789123\",\n    \"is_certified\": false,\n    \"favorite_music\": \"quackophonie\",\n    \"favorite_musician\": \"gilbertonin\",\n    \"favorite_genre\": \"quackfonk\"\n  }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:3000/statistics/user/artist/1",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"statistics",
+						"user",
+						"artist",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:3000/statistics/user/music/1",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"user\": {\n    \"user_id\": \"123456789123\",\n    \"is_certified\": false,\n    \"favorite_music\": \"quackophonie\",\n    \"favorite_musician\": \"gilbertonin\",\n    \"favorite_genre\": \"quackfonk\"\n  }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:3000/statistics/user/music/1",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"statistics",
+						"user",
+						"music",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:3000/statistics/user",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"user\": {\n    \"user_id\": \"123456789123\",\n    \"is_certified\": false,\n    \"favorite_music\": \"quackophonie\",\n    \"favorite_musician\": \"gilbertonin\",\n    \"favorite_genre\": \"quackfonk\"\n  }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:3000/statistics/user",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"statistics",
+						"user"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:3000/statistics/user/update/information",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"token\": \"BQBd4id4UE9YpL5wYU6eoakuRSjeCFRQ1L_OChCMIjfT7Pw6h0y7nKEsl04zMHKgNTA6EKZ0xubkWuBhp1tacOIt08MLe2OOp2ijcvLzBafNFQycVfg\",\n  \"user\": {\n    \"user_id\": \"123456789123\",\n    \"is_certified\": false,\n    \"favorite_music\": \"quackophonie\",\n    \"favorite_musician\": \"gilbertonin\",\n    \"favorite_genre\": \"quackfonk\"\n  }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:3000/statistics/user/update/information",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"statistics",
+						"user",
+						"update",
+						"information"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:3000/statistics/user/update/statistics",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"token\": \"BQBd4id4UE9YpL5wYU6eoakuRSjeCFRQ1L_OChCMIjfT7Pw6h0y7nKEsl04zMHKgNTA6EKZ0xubkWuBhp1tacOIt08MLe2OOp2ijcvLzBafNFQycVfg\",\n  \"user\": {\n    \"user_id\": \"123456789123\",\n    \"is_certified\": false,\n    \"favorite_music\": \"quackophonie\",\n    \"favorite_musician\": \"gilbertonin\",\n    \"favorite_genre\": \"quackfonk\"\n  }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:3000/statistics/user/update/statistics",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"statistics",
+						"user",
+						"update",
+						"statistics"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
