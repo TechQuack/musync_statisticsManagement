@@ -6,8 +6,8 @@ export class StatisticsService {
         if (!this.verifyRank(rank)) {
             throw new Error(`invalid rank: ${rank} less than 1 ot greater than 3`);
         }
-        if (!this.checkUserExistence(user)) {
-            throw new Error('not existent user');
+        if (!await this.checkUserExistence(user)) {
+            throw new Error('non existent user');
         }
         return new PrismaClient().topListenedArtist.findFirst({
             where: {
@@ -25,8 +25,8 @@ export class StatisticsService {
         if (!this.verifyRank(rank)) {
             throw Error(`invalid rank :${rank} greater than 3 or less than 1`);
         }
-        if (!this.checkUserExistence(user)) {
-            throw Error('invalid user');
+        if (!await this.checkUserExistence(user)) {
+            throw Error('non existent user');
         }
         return new PrismaClient().topListenedMusic.findFirst({
             where: {
@@ -41,8 +41,8 @@ export class StatisticsService {
     }
 
     public async getTopListenedArtists(user: User) {
-        if (!this.checkUserExistence(user)) {
-            throw Error('invalid user');
+        if (!await this.checkUserExistence(user)) {
+            throw Error('non existent user');
         }
         return new PrismaClient().topListenedArtist.findMany({
             where: {
@@ -54,8 +54,8 @@ export class StatisticsService {
     }
 
     public async getTopListenedMusics(user: User) {
-        if (!this.checkUserExistence(user)) {
-            throw Error(`invalid user`);
+        if (!await this.checkUserExistence(user)) {
+            throw Error(`non existent user`);
         }
         return new PrismaClient().topListenedMusic.findMany({
             where: {
@@ -66,19 +66,14 @@ export class StatisticsService {
         });
     }
 
-    public async getTopArtistsFromAPI(user: User, token: string) {
-        if (!this.checkUserExistence(user)) {
-            throw Error(`invalid user`);
-        }
-        const url = "https://api.spotify.com/v1/me/top/artists?limit=3&offset=0"
-        const response = await fetch(url, {
-            headers: {
-                Authorization: `Bearer ${token}`
-            }
-        });
-        let topArtists = await response.json();
+    public async getTopArtistsFromAPI(token: string) {
+        const url = "https://api.spotify.com/v1/me/top/artists?limit=3&offset=0";
+        let topArtists = await this.sendRequestToAPI(url, token);
         topArtists = topArtists.items;
         let res = []
+        if (topArtists == undefined) {
+            return false
+        }
         for (let i : number = 0; i < 3; i++) {
             res.push({
                 top_listened_artist: topArtists[i].name,
@@ -88,19 +83,14 @@ export class StatisticsService {
         return res;
     }
 
-    public async getTopMusicsFromAPI(user: User, token: string) {
-        if (!this.checkUserExistence(user)) {
-            throw Error(`invalid user`);
-        }
+    public async getTopMusicsFromAPI(token: string) {
         const url = "https://api.spotify.com/v1/me/top/tracks?limit=3&offset=0";
-        const response = await fetch(url, {
-            headers: {
-                Authorization: `Bearer ${token}`
-            }
-        });
-        let topMusics = await response.json();
+        let topMusics = await this.sendRequestToAPI(url, token);
         topMusics = topMusics.items;
         let res = [];
+        if (topMusics == undefined) {
+            return false
+        }
         for (let i : number = 0; i < 3; i++) {
             res.push({
                 top_listened_music: topMusics[i].name,
@@ -112,8 +102,11 @@ export class StatisticsService {
     }
 
     public async updateTopListenedArtists(user: User, token: string) : Promise<string> {
-        if (!this.checkUserExistence(user)) {
-            const topArtists = await this.getTopArtistsFromAPI(user, token);
+        if (!await this.checkUserExistence(user)) {
+            const topArtists = await this.getTopArtistsFromAPI(token);
+            if (!topArtists) {
+                return "error while reaching streaming platform API";
+            }
             const prisma = new PrismaClient();
             prisma.userMusicStatistic.update({
                 where: {
@@ -133,8 +126,11 @@ export class StatisticsService {
     }
 
     public async updateTopListenedMusics(user: User, token: string) : Promise<string> {
-        if (this.checkUserExistence(user)) {
-            const topMusics = await this.getTopMusicsFromAPI(user, token);
+        if (await this.checkUserExistence(user)) {
+            const topMusics = await this.getTopMusicsFromAPI(token);
+            if (!topMusics) {
+                return "error while reaching streaming platform API";
+            }
             const prisma = new PrismaClient();
             prisma.userMusicStatistic.update({
                 where: {
@@ -155,7 +151,7 @@ export class StatisticsService {
 
     public async updateUserInformation(user: User, token: string) {
         const prisma = new PrismaClient();
-        if (this.checkUserExistence(user)) {
+        if (await this.checkUserExistence(user)) {
             await prisma.user.update({
                 where: {
                     user_id: user.user_id
@@ -172,19 +168,18 @@ export class StatisticsService {
         return this.createUserStatistics(user, token);
     }
 
-    public async sendRequestToAPI(user: User,url: string, token: string) {
-        if (!this.checkUserExistence(user)) {
-            throw Error(`invalid user`);
-        }
-        await fetch(url, {
+    public async sendRequestToAPI(url: string, token: string) {
+        const response = await fetch(url, {
             headers: {
                 Authorization: `Bearer ${token}`
             }
         });
+        console.log(response)
+        return await response.json();
     }
 
     public async updateTopListenedArtist(user: User, artist: TopListenedArtist, rank: number) : Promise<void> {
-        if (!this.checkUserExistence(user)) {
+        if (!await this.checkUserExistence(user)) {
             throw Error(`invalid user`);
         }
         if (!this.verifyRank(rank)) {
@@ -212,7 +207,7 @@ export class StatisticsService {
     }
 
     public async updateTopListenedMusic(user: User, music: TopListenedMusic, rank: number) : Promise<void> {
-        if (!this.checkUserExistence(user)) {
+        if (!await this.checkUserExistence(user)) {
             throw Error(`invalid user`);
         }
         if (!this.verifyRank(rank)) {
@@ -248,7 +243,7 @@ export class StatisticsService {
             url: "https://accounts.spotify.com/api/token",
             headers: {
                 'Authorization': 'Basic '
-                    + Buffer.from(`${process.env.CLIENT_ID} : ${process.env.CLIENT_SECRET}`)
+                    + Buffer.from(`${process.env.CLIENT_ID}:${process.env.CLIENT_SECRET}`)
                         .toString('base64'),
             },
             form: {
@@ -269,11 +264,23 @@ export class StatisticsService {
 
     private async createUserStatistics(user: User, token: string) {
         const prisma = new PrismaClient();
-        const topArtists = await this.getTopArtistsFromAPI(user, token);
-        const topMusics = await this.getTopMusicsFromAPI(user, token);
+        const topArtists = await this.getTopArtistsFromAPI(token);
+        const topMusics = await this.getTopMusicsFromAPI(token);
+        if (!topMusics || !topArtists) {
+            return "error while reaching streaming platform API";
+        }
+        const newUser = await prisma.user.create({
+            data: {
+                is_certified: user.is_certified,
+                favorite_music: user.favorite_music,
+                favorite_musician: user.favorite_musician,
+                favorite_genre: user.favorite_genre
+            }
+        })
+
         await prisma.userMusicStatistic.create({
             data: {
-                user_id: user.user_id,
+                user_id: newUser.user_id,
                 top_listened_artist: {
                     createMany: {
                         data: topArtists
@@ -286,32 +293,39 @@ export class StatisticsService {
                 }
             }
         });
-        await prisma.user.create({
+
+        await prisma.user.update({
+            where: {
+                user_id: newUser.user_id
+            },
             data: {
-                is_certified: user.is_certified,
-                favorite_music: user.favorite_music,
-                favorite_musician: user.favorite_musician,
-                favorite_genre: user.favorite_genre,
                 userMusicStatistic: {
                     connect: {
-                        user_id: user.user_id
+                        user_id: newUser.user_id
                     }
                 }
             }
         })
-        return "user created";
+
+        return newUser.user_id;
     }
 
     private verifyRank(rank: number) {
         return rank >= 1 && rank <= 3;
     }
 
-    private checkUserExistence(user: User) {
+    private async checkUserExistence(user: User) {
         const prisma: PrismaClient = new PrismaClient();
-        return prisma.user.findUnique({
-            where: {
-                user_id: user.user_id
-            }
-        }) != null;
+        let userExistence = null;
+        try {
+            userExistence = await prisma.user.findUnique({
+                where: {
+                    user_id: user.user_id
+                }
+            });
+        } catch (e) {
+            return false;
+        }
+        return userExistence != null;
     }
 }
